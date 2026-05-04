@@ -8,8 +8,8 @@ export declare class SuppliersController {
             equipment: number;
         };
     } & {
-        name: string;
         id: number;
+        name: string;
         contact_info: string | null;
         address: string | null;
     })[]>;
@@ -18,26 +18,26 @@ export declare class SuppliersController {
             equipment: number;
         };
     } & {
-        name: string;
         id: number;
+        name: string;
         contact_info: string | null;
         address: string | null;
     }>;
     create(dto: CreateSupplierDto): Promise<{
-        name: string;
         id: number;
+        name: string;
         contact_info: string | null;
         address: string | null;
     }>;
     update(id: string, dto: UpdateSupplierDto): Promise<{
-        name: string;
         id: number;
+        name: string;
         contact_info: string | null;
         address: string | null;
     }>;
     remove(id: string): Promise<{
-        name: string;
         id: number;
+        name: string;
         contact_info: string | null;
         address: string | null;
     }>;

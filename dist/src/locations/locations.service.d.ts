@@ -8,8 +8,8 @@ export declare class LocationsService {
             equipment: number;
         };
     } & {
-        name: string;
         id: number;
+        name: string;
         address: string | null;
         manager_id: number | null;
     })[]>;
@@ -18,26 +18,26 @@ export declare class LocationsService {
             equipment: number;
         };
     } & {
-        name: string;
         id: number;
+        name: string;
         address: string | null;
         manager_id: number | null;
     }>;
     create(dto: CreateLocationDto): Promise<{
-        name: string;
         id: number;
+        name: string;
         address: string | null;
         manager_id: number | null;
     }>;
     update(id: number, dto: UpdateLocationDto): Promise<{
-        name: string;
         id: number;
+        name: string;
         address: string | null;
         manager_id: number | null;
     }>;
     remove(id: number): Promise<{
-        name: string;
         id: number;
+        name: string;
         address: string | null;
         manager_id: number | null;
     }>;

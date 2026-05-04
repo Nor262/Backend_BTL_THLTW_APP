@@ -5,8 +5,8 @@ export declare class MaintenanceService {
     constructor(prisma: PrismaService);
     create(dto: CreateMaintenanceDto): Promise<{
         equipment: {
-            name: string;
             id: number;
+            name: string;
             status: string;
             category_id: number;
             supplier_id: number | null;
@@ -30,8 +30,8 @@ export declare class MaintenanceService {
     }>;
     findByEquipment(equipmentId: number): Promise<({
         equipment: {
-            name: string;
             id: number;
+            name: string;
             serial_number: string;
         };
     } & {
@@ -45,8 +45,8 @@ export declare class MaintenanceService {
     })[]>;
     findAll(): Promise<({
         equipment: {
-            name: string;
             id: number;
+            name: string;
             status: string;
             serial_number: string;
         };
@@ -60,8 +60,8 @@ export declare class MaintenanceService {
         next_maintenance_date: Date | null;
     })[]>;
     completeMaintenance(equipmentId: number): Promise<{
-        name: string;
         id: number;
+        name: string;
         status: string;
         category_id: number;
         supplier_id: number | null;

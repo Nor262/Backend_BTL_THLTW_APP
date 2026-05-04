@@ -8,9 +8,9 @@ export declare class CategoriesService {
             equipment: number;
         };
     } & {
-        name: string;
         id: number;
         created_at: Date;
+        name: string;
         description: string | null;
     })[]>;
     findOne(id: number): Promise<{
@@ -18,27 +18,27 @@ export declare class CategoriesService {
             equipment: number;
         };
     } & {
-        name: string;
         id: number;
         created_at: Date;
+        name: string;
         description: string | null;
     }>;
     create(dto: CreateCategoryDto): Promise<{
-        name: string;
         id: number;
         created_at: Date;
+        name: string;
         description: string | null;
     }>;
     update(id: number, dto: UpdateCategoryDto): Promise<{
-        name: string;
         id: number;
         created_at: Date;
+        name: string;
         description: string | null;
     }>;
     remove(id: number): Promise<{
-        name: string;
         id: number;
         created_at: Date;
+        name: string;
         description: string | null;
     }>;
 }

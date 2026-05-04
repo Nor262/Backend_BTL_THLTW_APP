@@ -92,9 +92,31 @@ export declare class TransactionsController {
         transaction_status: string | null;
     }>;
     findAll(): Promise<({
-        equipment: {
-            name: string;
+        storekeeper: {
             id: number;
+            username: string;
+            email: string;
+            password_hash: string;
+            full_name: string | null;
+            role: string;
+            fcm_token: string | null;
+            is_active: boolean;
+            created_at: Date;
+        } | null;
+        borrower: {
+            id: number;
+            username: string;
+            email: string;
+            password_hash: string;
+            full_name: string | null;
+            role: string;
+            fcm_token: string | null;
+            is_active: boolean;
+            created_at: Date;
+        };
+        equipment: {
+            id: number;
+            name: string;
             status: string;
             category_id: number;
             supplier_id: number | null;
@@ -118,28 +140,6 @@ export declare class TransactionsController {
             is_active: boolean;
             created_at: Date;
         } | null;
-        storekeeper: {
-            id: number;
-            username: string;
-            email: string;
-            password_hash: string;
-            full_name: string | null;
-            role: string;
-            fcm_token: string | null;
-            is_active: boolean;
-            created_at: Date;
-        } | null;
-        borrower: {
-            id: number;
-            username: string;
-            email: string;
-            password_hash: string;
-            full_name: string | null;
-            role: string;
-            fcm_token: string | null;
-            is_active: boolean;
-            created_at: Date;
-        };
     } & {
         id: number;
         type: string;
@@ -162,8 +162,8 @@ export declare class TransactionsController {
     })[]>;
     findMyTransactions(req: any): Promise<({
         equipment: {
-            name: string;
             id: number;
+            name: string;
             status: string;
             serial_number: string;
         };

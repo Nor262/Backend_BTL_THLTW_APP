@@ -5,8 +5,8 @@ export declare class MaintenanceController {
     constructor(maintenanceService: MaintenanceService);
     findAll(): Promise<({
         equipment: {
-            name: string;
             id: number;
+            name: string;
             status: string;
             serial_number: string;
         };
@@ -21,8 +21,8 @@ export declare class MaintenanceController {
     })[]>;
     findByEquipment(equipmentId: string): Promise<({
         equipment: {
-            name: string;
             id: number;
+            name: string;
             serial_number: string;
         };
     } & {
@@ -36,8 +36,8 @@ export declare class MaintenanceController {
     })[]>;
     create(dto: CreateMaintenanceDto): Promise<{
         equipment: {
-            name: string;
             id: number;
+            name: string;
             status: string;
             category_id: number;
             supplier_id: number | null;
@@ -60,8 +60,8 @@ export declare class MaintenanceController {
         next_maintenance_date: Date | null;
     }>;
     completeMaintenance(equipmentId: string): Promise<{
-        name: string;
         id: number;
+        name: string;
         status: string;
         category_id: number;
         supplier_id: number | null;

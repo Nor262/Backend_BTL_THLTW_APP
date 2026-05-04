@@ -27,16 +27,16 @@ export declare class AnalyticsService {
         };
     }>;
     getOverdueList(): Promise<({
-        equipment: {
-            name: string;
-            id: number;
-            serial_number: string;
-        };
         borrower: {
             id: number;
             username: string;
             email: string;
             full_name: string | null;
+        };
+        equipment: {
+            id: number;
+            name: string;
+            serial_number: string;
         };
     } & {
         id: number;

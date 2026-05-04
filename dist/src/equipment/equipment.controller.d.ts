@@ -4,8 +4,8 @@ export declare class EquipmentController {
     private readonly equipmentService;
     constructor(equipmentService: EquipmentService);
     create(createEquipmentDto: CreateEquipmentDto): Promise<{
-        name: string;
         id: number;
+        name: string;
         status: string;
         category_id: number;
         supplier_id: number | null;
@@ -20,20 +20,20 @@ export declare class EquipmentController {
     }>;
     findAll(): Promise<({
         category: {
-            name: string;
             id: number;
             created_at: Date;
+            name: string;
             description: string | null;
         };
         location: {
-            name: string;
             id: number;
+            name: string;
             address: string | null;
             manager_id: number | null;
         } | null;
     } & {
-        name: string;
         id: number;
+        name: string;
         status: string;
         category_id: number;
         supplier_id: number | null;
@@ -48,20 +48,20 @@ export declare class EquipmentController {
     })[]>;
     findOne(id: string): Promise<{
         category: {
-            name: string;
             id: number;
             created_at: Date;
+            name: string;
             description: string | null;
         };
         location: {
-            name: string;
             id: number;
+            name: string;
             address: string | null;
             manager_id: number | null;
         } | null;
     } & {
-        name: string;
         id: number;
+        name: string;
         status: string;
         category_id: number;
         supplier_id: number | null;
@@ -75,8 +75,8 @@ export declare class EquipmentController {
         qr_code_data: string;
     }>;
     update(id: string, updateEquipmentDto: Partial<UpdateEquipmentDto>): Promise<{
-        name: string;
         id: number;
+        name: string;
         status: string;
         category_id: number;
         supplier_id: number | null;
@@ -90,8 +90,8 @@ export declare class EquipmentController {
         qr_code_data: string;
     }>;
     remove(id: string): Promise<{
-        name: string;
         id: number;
+        name: string;
         status: string;
         category_id: number;
         supplier_id: number | null;
