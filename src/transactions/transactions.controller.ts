@@ -52,4 +52,10 @@ export class TransactionsController {
   findMyTransactions(@Request() req: any) {
     return this.transactionsService.findMyTransactions(req.user.id);
   }
+
+  @Get('equipment/:id')
+  findByEquipment(@Param('id') id: string) {
+    return this.transactionsService.findByEquipment(+id);
+  }
 }
+

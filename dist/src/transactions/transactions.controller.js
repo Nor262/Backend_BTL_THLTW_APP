@@ -46,6 +46,9 @@ let TransactionsController = class TransactionsController {
     findMyTransactions(req) {
         return this.transactionsService.findMyTransactions(req.user.id);
     }
+    findByEquipment(id) {
+        return this.transactionsService.findByEquipment(+id);
+    }
 };
 exports.TransactionsController = TransactionsController;
 __decorate([
@@ -108,6 +111,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], TransactionsController.prototype, "findMyTransactions", null);
+__decorate([
+    (0, common_1.Get)('equipment/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TransactionsController.prototype, "findByEquipment", null);
 exports.TransactionsController = TransactionsController = __decorate([
     (0, swagger_1.ApiTags)('Transactions'),
     (0, swagger_1.ApiBearerAuth)(),

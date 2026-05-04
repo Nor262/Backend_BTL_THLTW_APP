@@ -65,7 +65,7 @@ let AuthService = class AuthService {
     async login(loginDto) {
         const user = await this.validateUser(loginDto.email, loginDto.password);
         if (!user) {
-            throw new common_1.UnauthorizedException('Invalid credentials');
+            throw new common_1.UnauthorizedException('Wrong Email or Password');
         }
         if (!user.is_active) {
             throw new common_1.UnauthorizedException('Account is deactivated. Contact admin.');

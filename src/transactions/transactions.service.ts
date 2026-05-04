@@ -139,7 +139,23 @@ export class TransactionsService {
     });
   }
 
+  async findByEquipment(equipmentId: number) {
+    return this.prisma.transaction.findMany({
+      where: {
+        equipment_id: equipmentId,
+        status: { in: ['pending', 'approved', 'active', 'overdue'] },
+      },
+      select: {
+        id: true,
+        request_date: true,
+        due_date: true,
+        status: true,
+      },
+    });
+  }
+
   async verifyItem(serialNumber: string) {
+
     const equipment = await this.prisma.equipment.findUnique({
       where: { serial_number: serialNumber },
     });

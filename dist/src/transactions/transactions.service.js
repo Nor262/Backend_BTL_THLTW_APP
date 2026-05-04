@@ -138,6 +138,20 @@ let TransactionsService = class TransactionsService {
             orderBy: { request_date: 'desc' },
         });
     }
+    async findByEquipment(equipmentId) {
+        return this.prisma.transaction.findMany({
+            where: {
+                equipment_id: equipmentId,
+                status: { in: ['pending', 'approved', 'active', 'overdue'] },
+            },
+            select: {
+                id: true,
+                request_date: true,
+                due_date: true,
+                status: true,
+            },
+        });
+    }
     async verifyItem(serialNumber) {
         const equipment = await this.prisma.equipment.findUnique({
             where: { serial_number: serialNumber },

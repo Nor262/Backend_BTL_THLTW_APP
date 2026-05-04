@@ -187,4 +187,10 @@ export declare class TransactionsController {
         storekeeper_id: number | null;
         borrower_id: number;
     })[]>;
+    findByEquipment(id: string): Promise<{
+        id: number;
+        status: string;
+        request_date: Date;
+        due_date: Date;
+    }[]>;
 }
