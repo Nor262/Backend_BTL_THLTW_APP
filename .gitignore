@@ -1,5 +1,4 @@
 node_modules
-dist
 /generated/prisma
 .env
 *.log
@@ -7,4 +6,4 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
-/dist/src
+dist/*
