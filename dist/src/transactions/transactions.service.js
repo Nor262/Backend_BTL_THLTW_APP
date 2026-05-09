@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 let TransactionsService = class TransactionsService {
     prisma;
-    constructor(prisma) {
+    notifications;
+    constructor(prisma, notifications) {
         this.prisma = prisma;
+        this.notifications = notifications;
     }
     async createBorrowRequest(userId, dto) {
         return this.prisma.$transaction(async (tx) => {
@@ -56,7 +59,7 @@ let TransactionsService = class TransactionsService {
                     data: { status: 'available' },
                 });
             }
-            return tx.transaction.update({
+            const updatedTx = await tx.transaction.update({
                 where: { id: transactionId },
                 data: {
                     status: dto.status,
@@ -65,7 +68,10 @@ let TransactionsService = class TransactionsService {
                     notes: dto.notes,
                     updated_by: reviewerId,
                 },
+                include: { equipment: true }
             });
+            await this.notifications.createNotification(transaction.borrower_id, dto.status === 'approved' ? 'Yêu cầu mượn được chấp nhận' : 'Yêu cầu mượn bị từ chối', `Yêu cầu mượn thiết bị ${updatedTx.equipment.name} của bạn đã được ${dto.status === 'approved' ? 'chấp nhận' : 'từ chối'}.`, 'borrow');
+            return updatedTx;
         });
     }
     async checkOut(transactionId, storekeeperId, dto) {
@@ -84,7 +90,7 @@ let TransactionsService = class TransactionsService {
                 where: { id: transaction.equipment_id },
                 data: { status: 'in_use' },
             });
-            return tx.transaction.update({
+            const updatedTx = await tx.transaction.update({
                 where: { id: transactionId },
                 data: {
                     status: 'active',
@@ -93,7 +99,10 @@ let TransactionsService = class TransactionsService {
                     condition_at_check_out: dto.condition,
                     updated_by: storekeeperId,
                 },
+                include: { equipment: true }
             });
+            await this.notifications.createNotification(transaction.borrower_id, 'Thiết bị đã được bàn giao', `Bạn đã nhận thiết bị ${updatedTx.equipment.name}. Vui lòng bảo quản cẩn thận và trả đúng hạn.`, 'borrow');
+            return updatedTx;
         });
     }
     async checkIn(transactionId, storekeeperId, dto) {
@@ -114,7 +123,7 @@ let TransactionsService = class TransactionsService {
                 where: { id: transaction.equipment_id },
                 data: { status: 'available' },
             });
-            return tx.transaction.update({
+            const updatedTx = await tx.transaction.update({
                 where: { id: transactionId },
                 data: {
                     status: 'completed',
@@ -123,7 +132,10 @@ let TransactionsService = class TransactionsService {
                     condition_at_check_in: dto.condition,
                     updated_by: storekeeperId,
                 },
+                include: { equipment: true }
             });
+            await this.notifications.createNotification(transaction.borrower_id, 'Hoàn tất trả thiết bị', `Cảm ơn bạn đã trả thiết bị ${updatedTx.equipment.name}. Giao dịch đã hoàn tất.`, 'return');
+            return updatedTx;
         });
     }
     async findAll() {
@@ -178,6 +190,7 @@ let TransactionsService = class TransactionsService {
 exports.TransactionsService = TransactionsService;
 exports.TransactionsService = TransactionsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notifications_service_1.NotificationsService])
 ], TransactionsService);
 //# sourceMappingURL=transactions.service.js.map

@@ -1,8 +1,10 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto } from './transactions.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 export declare class TransactionsService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private notifications;
+    constructor(prisma: PrismaService, notifications: NotificationsService);
     createBorrowRequest(userId: number, dto: CreateTransactionDto): Promise<{
         id: number;
         type: string;
@@ -24,6 +26,22 @@ export declare class TransactionsService {
         borrower_id: number;
     }>;
     reviewRequest(transactionId: number, reviewerId: number, dto: ReviewTransactionDto): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+            status: string;
+            purchase_date: Date | null;
+            category_id: number;
+            supplier_id: number | null;
+            location_id: number | null;
+            serial_number: string;
+            sku: string | null;
+            specifications: import("@prisma/client/runtime/client").JsonValue | null;
+            image_url: string | null;
+            current_condition: string | null;
+            qr_code_data: string;
+        };
+    } & {
         id: number;
         type: string;
         status: string;
@@ -44,6 +62,22 @@ export declare class TransactionsService {
         borrower_id: number;
     }>;
     checkOut(transactionId: number, storekeeperId: number, dto: CheckInOutDto): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+            status: string;
+            purchase_date: Date | null;
+            category_id: number;
+            supplier_id: number | null;
+            location_id: number | null;
+            serial_number: string;
+            sku: string | null;
+            specifications: import("@prisma/client/runtime/client").JsonValue | null;
+            image_url: string | null;
+            current_condition: string | null;
+            qr_code_data: string;
+        };
+    } & {
         id: number;
         type: string;
         status: string;
@@ -64,6 +98,22 @@ export declare class TransactionsService {
         borrower_id: number;
     }>;
     checkIn(transactionId: number, storekeeperId: number, dto: CheckInOutDto): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+            status: string;
+            purchase_date: Date | null;
+            category_id: number;
+            supplier_id: number | null;
+            location_id: number | null;
+            serial_number: string;
+            sku: string | null;
+            specifications: import("@prisma/client/runtime/client").JsonValue | null;
+            image_url: string | null;
+            current_condition: string | null;
+            qr_code_data: string;
+        };
+    } & {
         id: number;
         type: string;
         status: string;
@@ -110,6 +160,7 @@ export declare class TransactionsService {
             id: number;
             name: string;
             status: string;
+            purchase_date: Date | null;
             category_id: number;
             supplier_id: number | null;
             location_id: number | null;
@@ -117,7 +168,6 @@ export declare class TransactionsService {
             sku: string | null;
             specifications: import("@prisma/client/runtime/client").JsonValue | null;
             image_url: string | null;
-            purchase_date: Date | null;
             current_condition: string | null;
             qr_code_data: string;
         };

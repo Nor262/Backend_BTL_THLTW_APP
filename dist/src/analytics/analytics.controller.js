@@ -39,14 +39,14 @@ let AnalyticsController = class AnalyticsController {
 };
 exports.AnalyticsController = AnalyticsController;
 __decorate([
-    (0, roles_decorator_1.Roles)('admin'),
+    (0, roles_decorator_1.Roles)('admin', 'storekeeper'),
     (0, common_1.Get)('dashboard'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AnalyticsController.prototype, "getDashboardStats", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin'),
+    (0, roles_decorator_1.Roles)('admin', 'storekeeper'),
     (0, common_1.Get)('overdue'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

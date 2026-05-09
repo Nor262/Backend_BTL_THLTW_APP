@@ -1,10 +1,14 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto } from './transactions.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class TransactionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notifications: NotificationsService
+  ) {}
 
   async createBorrowRequest(userId: number, dto: CreateTransactionDto) {
     return this.prisma.$transaction(async (tx) => {
@@ -52,7 +56,7 @@ export class TransactionsService {
         });
       }
 
-      return tx.transaction.update({
+      const updatedTx = await tx.transaction.update({
         where: { id: transactionId },
         data: {
           status: dto.status,
@@ -61,7 +65,18 @@ export class TransactionsService {
           notes: dto.notes,
           updated_by: reviewerId,
         },
+        include: { equipment: true }
       });
+
+      // Notify borrower
+      await this.notifications.createNotification(
+        transaction.borrower_id,
+        dto.status === 'approved' ? 'Yêu cầu mượn được chấp nhận' : 'Yêu cầu mượn bị từ chối',
+        `Yêu cầu mượn thiết bị ${updatedTx.equipment.name} của bạn đã được ${dto.status === 'approved' ? 'chấp nhận' : 'từ chối'}.`,
+        'borrow'
+      );
+
+      return updatedTx;
     });
   }
 
@@ -80,7 +95,7 @@ export class TransactionsService {
         data: { status: 'in_use' },
       });
 
-      return tx.transaction.update({
+      const updatedTx = await tx.transaction.update({
         where: { id: transactionId },
         data: {
           status: 'active',
@@ -89,7 +104,18 @@ export class TransactionsService {
           condition_at_check_out: dto.condition,
           updated_by: storekeeperId,
         },
+        include: { equipment: true }
       });
+
+      // Notify borrower
+      await this.notifications.createNotification(
+        transaction.borrower_id,
+        'Thiết bị đã được bàn giao',
+        `Bạn đã nhận thiết bị ${updatedTx.equipment.name}. Vui lòng bảo quản cẩn thận và trả đúng hạn.`,
+        'borrow'
+      );
+
+      return updatedTx;
     });
   }
 
@@ -112,7 +138,7 @@ export class TransactionsService {
         data: { status: 'available' },
       });
 
-      return tx.transaction.update({
+      const updatedTx = await tx.transaction.update({
         where: { id: transactionId },
         data: {
           status: 'completed',
@@ -121,7 +147,18 @@ export class TransactionsService {
           condition_at_check_in: dto.condition,
           updated_by: storekeeperId,
         },
+        include: { equipment: true }
       });
+
+      // Notify borrower
+      await this.notifications.createNotification(
+        transaction.borrower_id,
+        'Hoàn tất trả thiết bị',
+        `Cảm ơn bạn đã trả thiết bị ${updatedTx.equipment.name}. Giao dịch đã hoàn tất.`,
+        'return'
+      );
+
+      return updatedTx;
     });
   }
 

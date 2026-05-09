@@ -21,6 +21,7 @@ model User {
   borrowed_txs     Transaction[]        @relation("BorrowerTransactions")
   approved_txs     Transaction[]        @relation("ApproverTransactions")
   handled_txs      Transaction[]        @relation("StorekeeperTransactions")
+  notifications    Notification[]
 
   @@map("users")
 }
@@ -126,4 +127,18 @@ model MaintenanceHistory {
   equipment             Equipment @relation(fields: [equipment_id], references: [id])
 
   @@map("maintenance_history")
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  title       String   @db.VarChar(255)
+  message     String   @db.Text
+  type        String   @db.VarChar(50) // system, borrow, return, etc.
+  is_read     Boolean  @default(false)
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@map("notifications")
 }

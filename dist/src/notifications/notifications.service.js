@@ -5,12 +5,47 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var MockNotificationsService_1;
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var NotificationsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MockNotificationsService = void 0;
+exports.NotificationsService = void 0;
 const common_1 = require("@nestjs/common");
-let MockNotificationsService = MockNotificationsService_1 = class MockNotificationsService {
-    logger = new common_1.Logger(MockNotificationsService_1.name);
+const prisma_service_1 = require("../prisma/prisma.service");
+let NotificationsService = NotificationsService_1 = class NotificationsService {
+    prisma;
+    logger = new common_1.Logger(NotificationsService_1.name);
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async createNotification(userId, title, message, type) {
+        await this.prisma.notification.create({
+            data: {
+                user_id: userId,
+                title,
+                message,
+                type,
+            },
+        });
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (user?.fcm_token) {
+            await this.sendPushNotification(user.fcm_token, title, message);
+        }
+    }
+    async getUserNotifications(userId) {
+        return this.prisma.notification.findMany({
+            where: { user_id: userId },
+            orderBy: { created_at: 'desc' },
+            take: 50,
+        });
+    }
+    async markAsRead(notificationId) {
+        await this.prisma.notification.update({
+            where: { id: notificationId },
+            data: { is_read: true },
+        });
+    }
     async sendPushNotification(token, title, body) {
         this.logger.log(`[MOCK PUSH] to ${token}: ${title} - ${body}`);
     }
@@ -18,8 +53,9 @@ let MockNotificationsService = MockNotificationsService_1 = class MockNotificati
         this.logger.log(`[MOCK EMAIL] to ${email}: ${subject} - ${body}`);
     }
 };
-exports.MockNotificationsService = MockNotificationsService;
-exports.MockNotificationsService = MockNotificationsService = MockNotificationsService_1 = __decorate([
-    (0, common_1.Injectable)()
-], MockNotificationsService);
+exports.NotificationsService = NotificationsService;
+exports.NotificationsService = NotificationsService = NotificationsService_1 = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+], NotificationsService);
 //# sourceMappingURL=notifications.service.js.map

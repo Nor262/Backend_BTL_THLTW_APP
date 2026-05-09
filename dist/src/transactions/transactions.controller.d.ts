@@ -24,6 +24,22 @@ export declare class TransactionsController {
         borrower_id: number;
     }>;
     reviewRequest(req: any, id: string, dto: ReviewTransactionDto): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+            status: string;
+            purchase_date: Date | null;
+            category_id: number;
+            supplier_id: number | null;
+            location_id: number | null;
+            serial_number: string;
+            sku: string | null;
+            specifications: import("@prisma/client/runtime/client").JsonValue | null;
+            image_url: string | null;
+            current_condition: string | null;
+            qr_code_data: string;
+        };
+    } & {
         id: number;
         type: string;
         status: string;
@@ -44,6 +60,22 @@ export declare class TransactionsController {
         borrower_id: number;
     }>;
     checkOut(req: any, id: string, dto: CheckInOutDto): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+            status: string;
+            purchase_date: Date | null;
+            category_id: number;
+            supplier_id: number | null;
+            location_id: number | null;
+            serial_number: string;
+            sku: string | null;
+            specifications: import("@prisma/client/runtime/client").JsonValue | null;
+            image_url: string | null;
+            current_condition: string | null;
+            qr_code_data: string;
+        };
+    } & {
         id: number;
         type: string;
         status: string;
@@ -64,6 +96,22 @@ export declare class TransactionsController {
         borrower_id: number;
     }>;
     checkIn(req: any, id: string, dto: CheckInOutDto): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+            status: string;
+            purchase_date: Date | null;
+            category_id: number;
+            supplier_id: number | null;
+            location_id: number | null;
+            serial_number: string;
+            sku: string | null;
+            specifications: import("@prisma/client/runtime/client").JsonValue | null;
+            image_url: string | null;
+            current_condition: string | null;
+            qr_code_data: string;
+        };
+    } & {
         id: number;
         type: string;
         status: string;
@@ -118,6 +166,7 @@ export declare class TransactionsController {
             id: number;
             name: string;
             status: string;
+            purchase_date: Date | null;
             category_id: number;
             supplier_id: number | null;
             location_id: number | null;
@@ -125,7 +174,6 @@ export declare class TransactionsController {
             sku: string | null;
             specifications: import("@prisma/client/runtime/client").JsonValue | null;
             image_url: string | null;
-            purchase_date: Date | null;
             current_condition: string | null;
             qr_code_data: string;
         };

@@ -1,10 +1,10 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { MockNotificationsService } from '../notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Processor('notifications')
 export class NotificationsQueueProcessor extends WorkerHost {
-  constructor(private readonly notificationsService: MockNotificationsService) {
+  constructor(private readonly notificationsService: NotificationsService) {
     super();
   }
 

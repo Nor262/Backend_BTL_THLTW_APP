@@ -39,6 +39,7 @@ export declare class MaintenanceController {
             id: number;
             name: string;
             status: string;
+            purchase_date: Date | null;
             category_id: number;
             supplier_id: number | null;
             location_id: number | null;
@@ -46,7 +47,6 @@ export declare class MaintenanceController {
             sku: string | null;
             specifications: import("@prisma/client/runtime/client").JsonValue | null;
             image_url: string | null;
-            purchase_date: Date | null;
             current_condition: string | null;
             qr_code_data: string;
         };
@@ -63,6 +63,7 @@ export declare class MaintenanceController {
         id: number;
         name: string;
         status: string;
+        purchase_date: Date | null;
         category_id: number;
         supplier_id: number | null;
         location_id: number | null;
@@ -70,7 +71,6 @@ export declare class MaintenanceController {
         sku: string | null;
         specifications: import("@prisma/client/runtime/client").JsonValue | null;
         image_url: string | null;
-        purchase_date: Date | null;
         current_condition: string | null;
         qr_code_data: string;
     }>;

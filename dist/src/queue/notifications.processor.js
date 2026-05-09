@@ -31,6 +31,6 @@ let NotificationsQueueProcessor = class NotificationsQueueProcessor extends bull
 exports.NotificationsQueueProcessor = NotificationsQueueProcessor;
 exports.NotificationsQueueProcessor = NotificationsQueueProcessor = __decorate([
     (0, bullmq_1.Processor)('notifications'),
-    __metadata("design:paramtypes", [notifications_service_1.MockNotificationsService])
+    __metadata("design:paramtypes", [notifications_service_1.NotificationsService])
 ], NotificationsQueueProcessor);
 //# sourceMappingURL=notifications.processor.js.map

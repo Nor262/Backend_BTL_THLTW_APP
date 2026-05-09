@@ -13,13 +13,13 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
-  @Roles('admin')
+  @Roles('admin', 'storekeeper')
   @Get('dashboard')
   getDashboardStats() {
     return this.analyticsService.getDashboardStats();
   }
 
-  @Roles('admin')
+  @Roles('admin', 'storekeeper')
   @Get('overdue')
   getOverdueList() {
     return this.analyticsService.getOverdueList();
