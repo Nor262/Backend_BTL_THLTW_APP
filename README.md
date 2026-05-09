@@ -1,98 +1,99 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Equipment Management System - Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Hệ thống quản lý thiết bị tích hợp mượn/trả, báo cáo hư hỏng kèm hình ảnh, lịch bận (Calendar) và xuất báo cáo Excel.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Tính năng chính
 
-## Description
+- **Quản lý thiết bị**: Theo dõi tình trạng, vị trí, danh mục và mã QR.
+- **Quy trình mượn/trả**: Phê duyệt yêu cầu, chống đặt trùng lịch (Double-Booking) bằng Pessimistic Locking.
+- **Báo cáo hư hỏng**: Tích hợp tải ảnh lên Cloudinary khi Check-in/Check-out.
+- **Lịch bận (Availability)**: API cung cấp các khoảng thời gian bận của thiết bị để hiển thị lên Calendar.
+- **Hệ thống Audit Log**: Theo dõi các hành động nhạy cảm của quản trị viên.
+- **Báo cáo**: Xuất danh sách thiết bị ra file Excel (.xlsx).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🛠 Tech Stack
 
-## Project setup
+- **Framework**: [NestJS](https://nestjs.com/) (v11)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Database**: MySQL 8.0
+- **Storage**: Cloudinary (Image handling)
+- **Reporting**: ExcelJS
+- **Queue/Background**: BullMQ & Redis
+- **Security**: Passport JWT, Bcrypt
 
+## 📋 Yêu cầu hệ thống
+
+- **Node.js**: v20 hoặc mới hơn
+- **Docker & Docker Compose**: Để chạy MySQL & Redis
+- **Cloudinary Account**: Để lưu trữ hình ảnh báo cáo
+
+## 🛠 Hướng dẫn cài đặt
+
+### 1. Clone repository
 ```bash
-$ npm install
+git clone <repository-url>
+cd backend
 ```
 
-## Compile and run the project
-
+### 2. Cài đặt dependency
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
-
+### 3. Thiết lập biến môi trường
 ```bash
-# unit tests
-$ npm run test
+cp .env.example .env
+```
+Mở file `.env` và điền các thông tin về Cloudinary và JWT Secret.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### 4. Khởi động Database (MySQL & Redis)
+```bash
+docker-compose up -d
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### 5. Khởi tạo Database Schema
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate dev
+```
+Hoặc nếu bạn muốn đẩy nhanh cấu hình (không dùng migration file trong môi trường dev):
+```bash
+npx prisma db push
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 6. Nạp dữ liệu mẫu (Seeding)
+```bash
+npx prisma db seed
+```
+Mặc định sẽ tạo tài khoản:
+- **Email**: `admin@example.com`
+- **Password**: `123456`
+- **Role**: `admin`
 
-## Resources
+### 7. Chạy ứng dụng
+```bash
+# Development mode
+npm run dev
+```
+Server sẽ chạy tại [http://localhost:3000/v1](http://localhost:3000/v1).
+Tài liệu Swagger: [http://localhost:3000/api/docs](http://localhost:3000/api/docs).
 
-Check out a few resources that may come in handy when working with NestJS:
+## 📂 Cấu trúc thư mục chính
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```
+src/
+├── audit/          # Logic lưu vết hoạt động hệ thống
+├── auth/           # Xác thực, phân quyền JWT
+├── cloudinary/     # Xử lý upload ảnh lên Cloud
+├── equipment/      # Quản lý thiết bị & kiểm tra lịch bận
+├── reports/        # Logic xuất file Excel
+├── transactions/   # Nghiệp vụ mượn/trả & báo cáo hư hỏng
+└── prisma/         # Prisma Client & Schema
+```
 
-## Support
+## 🧪 Chạy Tests
+```bash
+npm run test
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 📜 Tài liệu API chi tiết
+Xem file `API_DOCS.md` ở thư mục gốc của project để biết chi tiết về các endpoint.
