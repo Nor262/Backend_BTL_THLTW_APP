@@ -22,6 +22,9 @@ const categories_module_1 = require("./categories/categories.module");
 const suppliers_module_1 = require("./suppliers/suppliers.module");
 const locations_module_1 = require("./locations/locations.module");
 const maintenance_module_1 = require("./maintenance/maintenance.module");
+const cloudinary_module_1 = require("./cloudinary/cloudinary.module");
+const audit_module_1 = require("./audit/audit.module");
+const reports_module_1 = require("./reports/reports.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -40,6 +43,9 @@ exports.AppModule = AppModule = __decorate([
             suppliers_module_1.SuppliersModule,
             locations_module_1.LocationsModule,
             maintenance_module_1.MaintenanceModule,
+            cloudinary_module_1.CloudinaryModule,
+            audit_module_1.AuditModule,
+            reports_module_1.ReportsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -13,6 +13,9 @@ import { CategoriesModule } from './categories/categories.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { LocationsModule } from './locations/locations.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { AuditModule } from './audit/audit.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { MaintenanceModule } from './maintenance/maintenance.module';
     SuppliersModule,
     LocationsModule,
     MaintenanceModule,
+    CloudinaryModule,
+    AuditModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -4,104 +4,108 @@ export declare class EquipmentController {
     private readonly equipmentService;
     constructor(equipmentService: EquipmentService);
     create(createEquipmentDto: CreateEquipmentDto): Promise<{
-        id: number;
         name: string;
+        serial_number: string;
+        sku: string | null;
         status: string;
+        specifications: import("@prisma/client/runtime/client").JsonValue | null;
+        qr_code_data: string;
+        image_url: string | null;
         purchase_date: Date | null;
+        current_condition: string | null;
+        id: number;
         category_id: number;
         supplier_id: number | null;
         location_id: number | null;
-        serial_number: string;
-        sku: string | null;
-        specifications: import("@prisma/client/runtime/client").JsonValue | null;
-        image_url: string | null;
-        current_condition: string | null;
-        qr_code_data: string;
     }>;
     findAll(): Promise<({
         category: {
-            id: number;
-            created_at: Date;
             name: string;
+            id: number;
             description: string | null;
+            created_at: Date;
         };
         location: {
-            id: number;
             name: string;
+            id: number;
             address: string | null;
             manager_id: number | null;
         } | null;
     } & {
-        id: number;
         name: string;
+        serial_number: string;
+        sku: string | null;
         status: string;
+        specifications: import("@prisma/client/runtime/client").JsonValue | null;
+        qr_code_data: string;
+        image_url: string | null;
         purchase_date: Date | null;
+        current_condition: string | null;
+        id: number;
         category_id: number;
         supplier_id: number | null;
         location_id: number | null;
-        serial_number: string;
-        sku: string | null;
-        specifications: import("@prisma/client/runtime/client").JsonValue | null;
-        image_url: string | null;
-        current_condition: string | null;
-        qr_code_data: string;
     })[]>;
     findOne(id: string): Promise<{
         category: {
-            id: number;
-            created_at: Date;
             name: string;
+            id: number;
             description: string | null;
+            created_at: Date;
         };
         location: {
-            id: number;
             name: string;
+            id: number;
             address: string | null;
             manager_id: number | null;
         } | null;
     } & {
-        id: number;
         name: string;
+        serial_number: string;
+        sku: string | null;
         status: string;
+        specifications: import("@prisma/client/runtime/client").JsonValue | null;
+        qr_code_data: string;
+        image_url: string | null;
         purchase_date: Date | null;
+        current_condition: string | null;
+        id: number;
         category_id: number;
         supplier_id: number | null;
         location_id: number | null;
-        serial_number: string;
-        sku: string | null;
-        specifications: import("@prisma/client/runtime/client").JsonValue | null;
-        image_url: string | null;
-        current_condition: string | null;
-        qr_code_data: string;
     }>;
     update(id: string, updateEquipmentDto: Partial<UpdateEquipmentDto>): Promise<{
-        id: number;
         name: string;
+        serial_number: string;
+        sku: string | null;
         status: string;
+        specifications: import("@prisma/client/runtime/client").JsonValue | null;
+        qr_code_data: string;
+        image_url: string | null;
         purchase_date: Date | null;
+        current_condition: string | null;
+        id: number;
         category_id: number;
         supplier_id: number | null;
         location_id: number | null;
+    }>;
+    remove(req: any, id: string): Promise<{
+        name: string;
         serial_number: string;
         sku: string | null;
-        specifications: import("@prisma/client/runtime/client").JsonValue | null;
-        image_url: string | null;
-        current_condition: string | null;
-        qr_code_data: string;
-    }>;
-    remove(id: string): Promise<{
-        id: number;
-        name: string;
         status: string;
+        specifications: import("@prisma/client/runtime/client").JsonValue | null;
+        qr_code_data: string;
+        image_url: string | null;
         purchase_date: Date | null;
+        current_condition: string | null;
+        id: number;
         category_id: number;
         supplier_id: number | null;
         location_id: number | null;
-        serial_number: string;
-        sku: string | null;
-        specifications: import("@prisma/client/runtime/client").JsonValue | null;
-        image_url: string | null;
-        current_condition: string | null;
-        qr_code_data: string;
     }>;
+    getAvailability(id: string): Promise<{
+        start: any;
+        end: Date;
+    }[]>;
 }

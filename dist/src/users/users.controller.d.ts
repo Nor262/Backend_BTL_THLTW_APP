@@ -12,14 +12,14 @@ export declare class UsersController {
         is_active: boolean;
         created_at: Date;
     }[]>;
-    updateRole(id: string, dto: UpdateUserRoleDto): Promise<{
+    updateRole(req: any, id: string, dto: UpdateUserRoleDto): Promise<{
         id: number;
         username: string;
         email: string;
         role: string;
         is_active: boolean;
     }>;
-    setActiveStatus(id: string, dto: DeactivateUserDto): Promise<{
+    setActiveStatus(req: any, id: string, dto: DeactivateUserDto): Promise<{
         id: number;
         username: string;
         email: string;

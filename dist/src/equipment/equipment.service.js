@@ -46,10 +46,13 @@ exports.EquipmentService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const QRCode = __importStar(require("qrcode"));
+const audit_service_1 = require("../audit/audit.service");
 let EquipmentService = class EquipmentService {
     prisma;
-    constructor(prisma) {
+    auditService;
+    constructor(prisma, auditService) {
         this.prisma = prisma;
+        this.auditService = auditService;
     }
     async create(data) {
         const qrData = JSON.stringify({ serial: data.serial_number, timestamp: Date.now() });
@@ -89,15 +92,37 @@ let EquipmentService = class EquipmentService {
             },
         });
     }
-    async remove(id) {
-        return this.prisma.equipment.delete({
+    async remove(id, adminId) {
+        const equipment = await this.prisma.equipment.findUnique({ where: { id } });
+        if (!equipment)
+            throw new common_1.NotFoundException('Equipment not found');
+        const deleted = await this.prisma.equipment.delete({
             where: { id },
         });
+        await this.auditService.logAction(adminId, 'DELETE_EQUIPMENT', 'Equipment', id, `Deleted equipment: ${equipment.name} (${equipment.serial_number})`);
+        return deleted;
+    }
+    async getAvailability(id) {
+        const transactions = await this.prisma.transaction.findMany({
+            where: {
+                equipment_id: id,
+                status: { in: ['pending', 'approved', 'active', 'overdue'] },
+            },
+            select: {
+                start_date: true,
+                due_date: true,
+            },
+        });
+        return transactions.map((t) => ({
+            start: t.start_date,
+            end: t.due_date,
+        }));
     }
 };
 exports.EquipmentService = EquipmentService;
 exports.EquipmentService = EquipmentService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        audit_service_1.AuditService])
 ], EquipmentService);
 //# sourceMappingURL=equipment.service.js.map

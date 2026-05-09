@@ -1,8 +1,10 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
+import { AuditService } from '../audit/audit.service';
 export declare class UsersService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private auditService;
+    constructor(prisma: PrismaService, auditService: AuditService);
     findOneByEmail(email: string): Promise<User | null>;
     findById(id: number): Promise<User | null>;
     create(data: Prisma.UserCreateInput): Promise<User>;
@@ -15,14 +17,14 @@ export declare class UsersService {
         is_active: boolean;
         created_at: Date;
     }[]>;
-    updateRole(id: number, role: string): Promise<{
+    updateRole(id: number, role: string, adminId: number): Promise<{
         id: number;
         username: string;
         email: string;
         role: string;
         is_active: boolean;
     }>;
-    setActiveStatus(id: number, is_active: boolean): Promise<{
+    setActiveStatus(id: number, is_active: boolean, adminId: number): Promise<{
         id: number;
         username: string;
         email: string;

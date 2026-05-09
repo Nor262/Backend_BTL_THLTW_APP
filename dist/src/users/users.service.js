@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const audit_service_1 = require("../audit/audit.service");
 let UsersService = class UsersService {
     prisma;
-    constructor(prisma) {
+    auditService;
+    constructor(prisma, auditService) {
         this.prisma = prisma;
+        this.auditService = auditService;
     }
     async findOneByEmail(email) {
         return this.prisma.user.findUnique({ where: { email } });
@@ -40,25 +43,29 @@ let UsersService = class UsersService {
             orderBy: { created_at: 'desc' },
         });
     }
-    async updateRole(id, role) {
+    async updateRole(id, role, adminId) {
         const user = await this.prisma.user.findUnique({ where: { id } });
         if (!user)
             throw new common_1.NotFoundException('User not found');
-        return this.prisma.user.update({
+        const updated = await this.prisma.user.update({
             where: { id },
             data: { role },
             select: { id: true, username: true, email: true, role: true, is_active: true },
         });
+        await this.auditService.logAction(adminId, 'UPDATE_ROLE', 'User', id, `Changed role from ${user.role} to ${role}`);
+        return updated;
     }
-    async setActiveStatus(id, is_active) {
+    async setActiveStatus(id, is_active, adminId) {
         const user = await this.prisma.user.findUnique({ where: { id } });
         if (!user)
             throw new common_1.NotFoundException('User not found');
-        return this.prisma.user.update({
+        const updated = await this.prisma.user.update({
             where: { id },
             data: { is_active },
             select: { id: true, username: true, email: true, role: true, is_active: true },
         });
+        await this.auditService.logAction(adminId, 'UPDATE_STATUS', 'User', id, `Changed active status to ${is_active}`);
+        return updated;
     }
     async updateProfile(id, data) {
         return this.prisma.user.update({
@@ -77,6 +84,7 @@ let UsersService = class UsersService {
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        audit_service_1.AuditService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

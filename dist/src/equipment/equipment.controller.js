@@ -37,8 +37,11 @@ let EquipmentController = class EquipmentController {
     update(id, updateEquipmentDto) {
         return this.equipmentService.update(+id, updateEquipmentDto);
     }
-    remove(id) {
-        return this.equipmentService.remove(+id);
+    remove(req, id) {
+        return this.equipmentService.remove(+id, req.user.id);
+    }
+    getAvailability(id) {
+        return this.equipmentService.getAvailability(+id);
     }
 };
 exports.EquipmentController = EquipmentController;
@@ -75,11 +78,19 @@ __decorate([
 __decorate([
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], EquipmentController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)(':id/availability'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], EquipmentController.prototype, "remove", null);
+], EquipmentController.prototype, "getAvailability", null);
 exports.EquipmentController = EquipmentController = __decorate([
     (0, swagger_1.ApiTags)('Equipment'),
     (0, swagger_1.ApiBearerAuth)(),

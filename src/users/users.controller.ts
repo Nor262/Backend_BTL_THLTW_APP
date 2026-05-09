@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserRoleDto, DeactivateUserDto } from './users.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -21,13 +21,13 @@ export class UsersController {
 
   @Roles('admin')
   @Patch(':id/role')
-  updateRole(@Param('id') id: string, @Body() dto: UpdateUserRoleDto) {
-    return this.usersService.updateRole(+id, dto.role);
+  updateRole(@Request() req: any, @Param('id') id: string, @Body() dto: UpdateUserRoleDto) {
+    return this.usersService.updateRole(+id, dto.role, req.user.id);
   }
 
   @Roles('admin')
   @Patch(':id/status')
-  setActiveStatus(@Param('id') id: string, @Body() dto: DeactivateUserDto) {
-    return this.usersService.setActiveStatus(+id, dto.is_active);
+  setActiveStatus(@Request() req: any, @Param('id') id: string, @Body() dto: DeactivateUserDto) {
+    return this.usersService.setActiveStatus(+id, dto.is_active, req.user.id);
   }
 }

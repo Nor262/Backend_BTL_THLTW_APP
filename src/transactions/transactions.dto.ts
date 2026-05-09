@@ -6,6 +6,10 @@ export class CreateTransactionDto {
   @IsInt()
   equipment_id!: number;
 
+  @ApiProperty({ example: '2026-05-15T08:00:00Z' })
+  @IsDateString()
+  start_date!: string;
+
   @ApiProperty({ example: '2026-05-17T17:00:00Z' })
   @IsDateString()
   due_date!: string;
@@ -36,6 +40,10 @@ export class CheckInOutDto {
   @IsString()
   @IsOptional()
   condition?: string;
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
+  image?: any;
 }
 
 export class VerifyItemDto {

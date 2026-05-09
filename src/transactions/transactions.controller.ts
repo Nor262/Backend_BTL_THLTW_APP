@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Param, UseGuards, Request, Put, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, UseGuards, Request, Put, Get, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto, VerifyItemDto } from './transactions.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -27,14 +28,28 @@ export class TransactionsController {
 
   @Roles('storekeeper', 'admin')
   @Put(':id/checkout')
-  checkOut(@Request() req: any, @Param('id') id: string, @Body() dto: CheckInOutDto) {
-    return this.transactionsService.checkOut(+id, req.user.id, dto);
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  checkOut(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() dto: CheckInOutDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.transactionsService.checkOut(+id, req.user.id, dto, file);
   }
 
   @Roles('storekeeper', 'admin')
   @Put(':id/checkin')
-  checkIn(@Request() req: any, @Param('id') id: string, @Body() dto: CheckInOutDto) {
-    return this.transactionsService.checkIn(+id, req.user.id, dto);
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  checkIn(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() dto: CheckInOutDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.transactionsService.checkIn(+id, req.user.id, dto, file);
   }
 
   @Roles('storekeeper', 'admin')

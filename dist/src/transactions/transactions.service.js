@@ -13,12 +13,15 @@ exports.TransactionsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const notifications_service_1 = require("../notifications/notifications.service");
+const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
 let TransactionsService = class TransactionsService {
     prisma;
     notifications;
-    constructor(prisma, notifications) {
+    cloudinary;
+    constructor(prisma, notifications, cloudinary) {
         this.prisma = prisma;
         this.notifications = notifications;
+        this.cloudinary = cloudinary;
     }
     async createBorrowRequest(userId, dto) {
         return this.prisma.$transaction(async (tx) => {
@@ -28,20 +31,33 @@ let TransactionsService = class TransactionsService {
             if (!equipment || equipment.length === 0) {
                 throw new common_1.NotFoundException('Equipment not found');
             }
-            if (equipment[0].status !== 'available') {
-                throw new common_1.BadRequestException('Equipment is not available');
+            if (['broken', 'maintenance'].includes(equipment[0].status)) {
+                throw new common_1.BadRequestException('Equipment is broken or under maintenance');
             }
-            await tx.equipment.update({
-                where: { id: dto.equipment_id },
-                data: { status: 'reserved' },
+            const reqStart = new Date(dto.start_date);
+            const reqDue = new Date(dto.due_date);
+            if (reqStart >= reqDue) {
+                throw new common_1.BadRequestException('Start date must be before due date');
+            }
+            const overlapping = await tx.transaction.findFirst({
+                where: {
+                    equipment_id: dto.equipment_id,
+                    status: { in: ['approved', 'active', 'pending'] },
+                    start_date: { lt: reqDue },
+                    due_date: { gt: reqStart },
+                }
             });
+            if (overlapping) {
+                throw new common_1.BadRequestException('Equipment is already booked for the selected dates');
+            }
             return tx.transaction.create({
                 data: {
                     equipment_id: dto.equipment_id,
                     borrower_id: userId,
                     type: 'borrow',
                     status: 'pending',
-                    due_date: new Date(dto.due_date),
+                    start_date: reqStart,
+                    due_date: reqDue,
                     notes: dto.notes,
                     created_by: userId,
                 },
@@ -53,12 +69,6 @@ let TransactionsService = class TransactionsService {
             const transaction = await tx.transaction.findUnique({ where: { id: transactionId } });
             if (!transaction)
                 throw new common_1.NotFoundException('Transaction not found');
-            if (dto.status === 'rejected') {
-                await tx.equipment.update({
-                    where: { id: transaction.equipment_id },
-                    data: { status: 'available' },
-                });
-            }
             const updatedTx = await tx.transaction.update({
                 where: { id: transactionId },
                 data: {
@@ -74,7 +84,7 @@ let TransactionsService = class TransactionsService {
             return updatedTx;
         });
     }
-    async checkOut(transactionId, storekeeperId, dto) {
+    async checkOut(transactionId, storekeeperId, dto, file) {
         const transaction = await this.prisma.transaction.findUnique({
             where: { id: transactionId },
             include: { equipment: true }
@@ -85,6 +95,11 @@ let TransactionsService = class TransactionsService {
             throw new common_1.BadRequestException('Transaction not approved');
         if (transaction.equipment.qr_code_data !== dto.qr_code_data)
             throw new common_1.BadRequestException('QR Code mismatch');
+        let imageUrl = null;
+        if (file) {
+            const uploadResult = await this.cloudinary.uploadFile(file);
+            imageUrl = uploadResult.secure_url;
+        }
         return this.prisma.$transaction(async (tx) => {
             await tx.equipment.update({
                 where: { id: transaction.equipment_id },
@@ -97,6 +112,7 @@ let TransactionsService = class TransactionsService {
                     storekeeper_id: storekeeperId,
                     actual_check_out: new Date(),
                     condition_at_check_out: dto.condition,
+                    image_url_before: imageUrl,
                     updated_by: storekeeperId,
                 },
                 include: { equipment: true }
@@ -105,7 +121,7 @@ let TransactionsService = class TransactionsService {
             return updatedTx;
         });
     }
-    async checkIn(transactionId, storekeeperId, dto) {
+    async checkIn(transactionId, storekeeperId, dto, file) {
         const transaction = await this.prisma.transaction.findUnique({
             where: { id: transactionId },
             include: { equipment: true }
@@ -117,6 +133,11 @@ let TransactionsService = class TransactionsService {
         }
         if (transaction.equipment.qr_code_data !== dto.qr_code_data) {
             throw new common_1.BadRequestException('QR Code mismatch');
+        }
+        let imageUrl = null;
+        if (file) {
+            const uploadResult = await this.cloudinary.uploadFile(file);
+            imageUrl = uploadResult.secure_url;
         }
         return this.prisma.$transaction(async (tx) => {
             await tx.equipment.update({
@@ -130,6 +151,7 @@ let TransactionsService = class TransactionsService {
                     storekeeper_id: storekeeperId,
                     actual_check_in: new Date(),
                     condition_at_check_in: dto.condition,
+                    image_url_after: imageUrl,
                     updated_by: storekeeperId,
                 },
                 include: { equipment: true }
@@ -146,7 +168,7 @@ let TransactionsService = class TransactionsService {
     async findMyTransactions(userId) {
         return this.prisma.transaction.findMany({
             where: { borrower_id: userId },
-            include: { equipment: { select: { id: true, name: true, serial_number: true, status: true } } },
+            include: { equipment: { select: { id: true, name: true, serial_number: true, status: true, image_url: true } } },
             orderBy: { request_date: 'desc' },
         });
     }
@@ -191,6 +213,7 @@ exports.TransactionsService = TransactionsService;
 exports.TransactionsService = TransactionsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        notifications_service_1.NotificationsService])
+        notifications_service_1.NotificationsService,
+        cloudinary_service_1.CloudinaryService])
 ], TransactionsService);
 //# sourceMappingURL=transactions.service.js.map

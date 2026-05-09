@@ -14,6 +14,7 @@ const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 class CreateTransactionDto {
     equipment_id;
+    start_date;
     due_date;
     notes;
 }
@@ -23,6 +24,11 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CreateTransactionDto.prototype, "equipment_id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-05-15T08:00:00Z' }),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
+], CreateTransactionDto.prototype, "start_date", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: '2026-05-17T17:00:00Z' }),
     (0, class_validator_1.IsDateString)(),
@@ -53,6 +59,7 @@ __decorate([
 class CheckInOutDto {
     qr_code_data;
     condition;
+    image;
 }
 exports.CheckInOutDto = CheckInOutDto;
 __decorate([
@@ -66,6 +73,11 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CheckInOutDto.prototype, "condition", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: 'string', format: 'binary', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CheckInOutDto.prototype, "image", void 0);
 class VerifyItemDto {
     serial_number;
 }

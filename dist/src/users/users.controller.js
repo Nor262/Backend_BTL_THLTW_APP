@@ -28,11 +28,11 @@ let UsersController = class UsersController {
     findAll() {
         return this.usersService.findAll();
     }
-    updateRole(id, dto) {
-        return this.usersService.updateRole(+id, dto.role);
+    updateRole(req, id, dto) {
+        return this.usersService.updateRole(+id, dto.role, req.user.id);
     }
-    setActiveStatus(id, dto) {
-        return this.usersService.setActiveStatus(+id, dto.is_active);
+    setActiveStatus(req, id, dto) {
+        return this.usersService.setActiveStatus(+id, dto.is_active, req.user.id);
     }
 };
 exports.UsersController = UsersController;
@@ -46,19 +46,21 @@ __decorate([
 __decorate([
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Patch)(':id/role'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, users_dto_1.UpdateUserRoleDto]),
+    __metadata("design:paramtypes", [Object, String, users_dto_1.UpdateUserRoleDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "updateRole", null);
 __decorate([
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Patch)(':id/status'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, users_dto_1.DeactivateUserDto]),
+    __metadata("design:paramtypes", [Object, String, users_dto_1.DeactivateUserDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "setActiveStatus", null);
 exports.UsersController = UsersController = __decorate([

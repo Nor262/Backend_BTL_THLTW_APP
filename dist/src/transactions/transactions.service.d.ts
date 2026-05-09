@@ -1,12 +1,18 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto } from './transactions.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 export declare class TransactionsService {
     private prisma;
     private notifications;
-    constructor(prisma: PrismaService, notifications: NotificationsService);
+    private cloudinary;
+    constructor(prisma: PrismaService, notifications: NotificationsService, cloudinary: CloudinaryService);
     createBorrowRequest(userId: number, dto: CreateTransactionDto): Promise<{
         id: number;
+        equipment_id: number;
+        borrower_id: number;
+        approver_id: number | null;
+        storekeeper_id: number | null;
         type: string;
         status: string;
         request_date: Date;
@@ -20,29 +26,29 @@ export declare class TransactionsService {
         created_by: number | null;
         updated_by: number | null;
         updated_at: Date;
-        equipment_id: number;
-        approver_id: number | null;
-        storekeeper_id: number | null;
-        borrower_id: number;
     }>;
     reviewRequest(transactionId: number, reviewerId: number, dto: ReviewTransactionDto): Promise<{
         equipment: {
-            id: number;
             name: string;
+            id: number;
             status: string;
-            purchase_date: Date | null;
             category_id: number;
             supplier_id: number | null;
             location_id: number | null;
             serial_number: string;
             sku: string | null;
             specifications: import("@prisma/client/runtime/client").JsonValue | null;
-            image_url: string | null;
-            current_condition: string | null;
             qr_code_data: string;
+            image_url: string | null;
+            purchase_date: Date | null;
+            current_condition: string | null;
         };
     } & {
         id: number;
+        equipment_id: number;
+        borrower_id: number;
+        approver_id: number | null;
+        storekeeper_id: number | null;
         type: string;
         status: string;
         request_date: Date;
@@ -56,29 +62,13 @@ export declare class TransactionsService {
         created_by: number | null;
         updated_by: number | null;
         updated_at: Date;
-        equipment_id: number;
-        approver_id: number | null;
-        storekeeper_id: number | null;
-        borrower_id: number;
     }>;
-    checkOut(transactionId: number, storekeeperId: number, dto: CheckInOutDto): Promise<{
-        equipment: {
-            id: number;
-            name: string;
-            status: string;
-            purchase_date: Date | null;
-            category_id: number;
-            supplier_id: number | null;
-            location_id: number | null;
-            serial_number: string;
-            sku: string | null;
-            specifications: import("@prisma/client/runtime/client").JsonValue | null;
-            image_url: string | null;
-            current_condition: string | null;
-            qr_code_data: string;
-        };
-    } & {
+    checkOut(transactionId: number, storekeeperId: number, dto: CheckInOutDto, file?: Express.Multer.File): Promise<{
         id: number;
+        equipment_id: number;
+        borrower_id: number;
+        approver_id: number | null;
+        storekeeper_id: number | null;
         type: string;
         status: string;
         request_date: Date;
@@ -92,29 +82,13 @@ export declare class TransactionsService {
         created_by: number | null;
         updated_by: number | null;
         updated_at: Date;
-        equipment_id: number;
-        approver_id: number | null;
-        storekeeper_id: number | null;
-        borrower_id: number;
     }>;
-    checkIn(transactionId: number, storekeeperId: number, dto: CheckInOutDto): Promise<{
-        equipment: {
-            id: number;
-            name: string;
-            status: string;
-            purchase_date: Date | null;
-            category_id: number;
-            supplier_id: number | null;
-            location_id: number | null;
-            serial_number: string;
-            sku: string | null;
-            specifications: import("@prisma/client/runtime/client").JsonValue | null;
-            image_url: string | null;
-            current_condition: string | null;
-            qr_code_data: string;
-        };
-    } & {
+    checkIn(transactionId: number, storekeeperId: number, dto: CheckInOutDto, file?: Express.Multer.File): Promise<{
         id: number;
+        equipment_id: number;
+        borrower_id: number;
+        approver_id: number | null;
+        storekeeper_id: number | null;
         type: string;
         status: string;
         request_date: Date;
@@ -128,23 +102,23 @@ export declare class TransactionsService {
         created_by: number | null;
         updated_by: number | null;
         updated_at: Date;
-        equipment_id: number;
-        approver_id: number | null;
-        storekeeper_id: number | null;
-        borrower_id: number;
     }>;
     findAll(): Promise<({
-        storekeeper: {
+        equipment: {
+            name: string;
             id: number;
-            username: string;
-            email: string;
-            password_hash: string;
-            full_name: string | null;
-            role: string;
-            fcm_token: string | null;
-            is_active: boolean;
-            created_at: Date;
-        } | null;
+            status: string;
+            category_id: number;
+            supplier_id: number | null;
+            location_id: number | null;
+            serial_number: string;
+            sku: string | null;
+            specifications: import("@prisma/client/runtime/client").JsonValue | null;
+            qr_code_data: string;
+            image_url: string | null;
+            purchase_date: Date | null;
+            current_condition: string | null;
+        };
         borrower: {
             id: number;
             username: string;
@@ -155,21 +129,6 @@ export declare class TransactionsService {
             fcm_token: string | null;
             is_active: boolean;
             created_at: Date;
-        };
-        equipment: {
-            id: number;
-            name: string;
-            status: string;
-            purchase_date: Date | null;
-            category_id: number;
-            supplier_id: number | null;
-            location_id: number | null;
-            serial_number: string;
-            sku: string | null;
-            specifications: import("@prisma/client/runtime/client").JsonValue | null;
-            image_url: string | null;
-            current_condition: string | null;
-            qr_code_data: string;
         };
         approver: {
             id: number;
@@ -182,8 +141,23 @@ export declare class TransactionsService {
             is_active: boolean;
             created_at: Date;
         } | null;
+        storekeeper: {
+            id: number;
+            username: string;
+            email: string;
+            password_hash: string;
+            full_name: string | null;
+            role: string;
+            fcm_token: string | null;
+            is_active: boolean;
+            created_at: Date;
+        } | null;
     } & {
         id: number;
+        equipment_id: number;
+        borrower_id: number;
+        approver_id: number | null;
+        storekeeper_id: number | null;
         type: string;
         status: string;
         request_date: Date;
@@ -197,20 +171,21 @@ export declare class TransactionsService {
         created_by: number | null;
         updated_by: number | null;
         updated_at: Date;
-        equipment_id: number;
-        approver_id: number | null;
-        storekeeper_id: number | null;
-        borrower_id: number;
     })[]>;
     findMyTransactions(userId: number): Promise<({
         equipment: {
-            id: number;
             name: string;
+            id: number;
             status: string;
             serial_number: string;
+            image_url: string | null;
         };
     } & {
         id: number;
+        equipment_id: number;
+        borrower_id: number;
+        approver_id: number | null;
+        storekeeper_id: number | null;
         type: string;
         status: string;
         request_date: Date;
@@ -224,10 +199,6 @@ export declare class TransactionsService {
         created_by: number | null;
         updated_by: number | null;
         updated_at: Date;
-        equipment_id: number;
-        approver_id: number | null;
-        storekeeper_id: number | null;
-        borrower_id: number;
     })[]>;
     findByEquipment(equipmentId: number): Promise<{
         id: number;

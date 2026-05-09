@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateEquipmentDto, UpdateEquipmentDto } from './equipment.dto';
 import * as QRCode from 'qrcode';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class EquipmentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditService: AuditService
+  ) {}
 
   async create(data: CreateEquipmentDto) {
     const qrData = JSON.stringify({ serial: data.serial_number, timestamp: Date.now() });
@@ -52,9 +56,40 @@ export class EquipmentService {
     });
   }
 
-  async remove(id: number) {
-    return this.prisma.equipment.delete({
+  async remove(id: number, adminId: number) {
+    const equipment = await this.prisma.equipment.findUnique({ where: { id } });
+    if (!equipment) throw new NotFoundException('Equipment not found');
+
+    const deleted = await this.prisma.equipment.delete({
       where: { id },
     });
+
+    await this.auditService.logAction(
+      adminId,
+      'DELETE_EQUIPMENT',
+      'Equipment',
+      id,
+      `Deleted equipment: ${equipment.name} (${equipment.serial_number})`
+    );
+
+    return deleted;
+  }
+
+  async getAvailability(id: number) {
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        equipment_id: id,
+        status: { in: ['pending', 'approved', 'active', 'overdue'] },
+      },
+      select: {
+        start_date: true,
+        due_date: true,
+      },
+    });
+
+    return transactions.map((t) => ({
+      start: t.start_date,
+      end: t.due_date,
+    }));
   }
 }

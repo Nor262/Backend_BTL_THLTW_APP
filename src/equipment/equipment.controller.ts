@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Request } from '@nestjs/common';
 import { EquipmentService } from './equipment.service';
 import { CreateEquipmentDto, UpdateEquipmentDto } from './equipment.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -37,7 +37,12 @@ export class EquipmentController {
 
   @Roles('admin')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.equipmentService.remove(+id);
+  remove(@Request() req: any, @Param('id') id: string) {
+    return this.equipmentService.remove(+id, req.user.id);
+  }
+
+  @Get(':id/availability')
+  getAvailability(@Param('id') id: string) {
+    return this.equipmentService.getAvailability(+id);
   }
 }

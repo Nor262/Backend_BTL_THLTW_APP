@@ -11,9 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionsController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const transactions_service_1 = require("./transactions.service");
 const transactions_dto_1 = require("./transactions.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
@@ -31,11 +33,11 @@ let TransactionsController = class TransactionsController {
     reviewRequest(req, id, dto) {
         return this.transactionsService.reviewRequest(+id, req.user.id, dto);
     }
-    checkOut(req, id, dto) {
-        return this.transactionsService.checkOut(+id, req.user.id, dto);
+    checkOut(req, id, dto, file) {
+        return this.transactionsService.checkOut(+id, req.user.id, dto, file);
     }
-    checkIn(req, id, dto) {
-        return this.transactionsService.checkIn(+id, req.user.id, dto);
+    checkIn(req, id, dto, file) {
+        return this.transactionsService.checkIn(+id, req.user.id, dto, file);
     }
     verifyItem(dto) {
         return this.transactionsService.verifyItem(dto.serial_number);
@@ -73,21 +75,27 @@ __decorate([
 __decorate([
     (0, roles_decorator_1.Roles)('storekeeper', 'admin'),
     (0, common_1.Put)(':id/checkout'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Param)('id')),
     __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, transactions_dto_1.CheckInOutDto]),
+    __metadata("design:paramtypes", [Object, String, transactions_dto_1.CheckInOutDto, typeof (_b = typeof Express !== "undefined" && (_a = Express.Multer) !== void 0 && _a.File) === "function" ? _b : Object]),
     __metadata("design:returntype", void 0)
 ], TransactionsController.prototype, "checkOut", null);
 __decorate([
     (0, roles_decorator_1.Roles)('storekeeper', 'admin'),
     (0, common_1.Put)(':id/checkin'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Param)('id')),
     __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, transactions_dto_1.CheckInOutDto]),
+    __metadata("design:paramtypes", [Object, String, transactions_dto_1.CheckInOutDto, typeof (_d = typeof Express !== "undefined" && (_c = Express.Multer) !== void 0 && _c.File) === "function" ? _d : Object]),
     __metadata("design:returntype", void 0)
 ], TransactionsController.prototype, "checkIn", null);
 __decorate([
