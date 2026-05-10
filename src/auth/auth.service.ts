@@ -38,9 +38,14 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const existingUser = await this.usersService.findOneByEmail(registerDto.email);
-    if (existingUser) {
+    const existingEmail = await this.usersService.findOneByEmail(registerDto.email);
+    if (existingEmail) {
       throw new BadRequestException('Email already exists');
+    }
+
+    const existingUsername = await this.usersService.findOneByUsername(registerDto.username);
+    if (existingUsername) {
+      throw new BadRequestException('Username already exists');
     }
 
     const salt = await bcrypt.genSalt();
