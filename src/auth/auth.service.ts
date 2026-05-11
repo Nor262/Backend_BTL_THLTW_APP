@@ -12,8 +12,8 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOneByEmail(email);
+  async validateUser(identifier: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOneByIdentifier(identifier);
     if (user && await bcrypt.compare(pass, user.password_hash)) {
       const { password_hash, ...result } = user;
       return result;
@@ -22,7 +22,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
+    const user = await this.validateUser(loginDto.identifier, loginDto.password);
     if (!user) {
       throw new UnauthorizedException('Wrong Email or Password');
     }

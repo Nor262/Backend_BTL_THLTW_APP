@@ -23,6 +23,7 @@
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
@@ -38,6 +39,8 @@
     "cloudinary": "^2.10.0",
     "dayjs": "^1.11.20",
     "exceljs": "^4.4.0",
+    "expo-server-sdk": "^6.1.0",
+    "firebase-admin": "^13.9.0",
     "mariadb": "^3.5.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
