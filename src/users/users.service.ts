@@ -14,10 +14,6 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findOneByUsername(username: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { username } });
-  }
-
   async findOneByIdentifier(identifier: string): Promise<User | null> {
     return this.prisma.user.findFirst({
       where: {
