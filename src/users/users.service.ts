@@ -8,14 +8,10 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private auditService: AuditService
-  ) {}
+  ) { }
 
   async findOneByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { email } });
-  }
-
-  async findOneByUsername(username: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { username } });
   }
 
   async findOneByIdentifier(identifier: string): Promise<User | null> {
@@ -57,7 +53,7 @@ export class UsersService {
   async updateRole(id: number, role: string, adminId: number) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
-    
+
     const updated = await this.prisma.user.update({
       where: { id },
       data: { role },
@@ -78,7 +74,7 @@ export class UsersService {
   async setActiveStatus(id: number, is_active: boolean, adminId: number) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
-    
+
     const updated = await this.prisma.user.update({
       where: { id },
       data: { is_active },
