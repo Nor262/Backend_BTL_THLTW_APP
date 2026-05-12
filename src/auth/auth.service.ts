@@ -22,6 +22,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
+    console.log('Dữ liệu Login nhận được:', loginDto); // Xem ở terminal nó hiện ra email hay username
     const user = await this.validateUser(loginDto.email, loginDto.password);
     if (!user) {
       throw new UnauthorizedException('Wrong Email or Password');
@@ -30,11 +31,13 @@ export class AuthService {
       throw new UnauthorizedException('Account is deactivated. Contact admin.');
     }
     const payload = { email: user.email, sub: user.id, role: user.role };
+    console.log('--- Buoc 1: Validate User xong ---');
     return {
       user,
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
+    console.log('--- Buoc 2: Tao Token xong ---');
   }
 
   async register(registerDto: RegisterDto) {

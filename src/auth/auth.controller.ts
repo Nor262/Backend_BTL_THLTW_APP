@@ -8,11 +8,19 @@ import { UpdateProfileDto, ChangePasswordDto } from '../users/users.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    try {
+      return await this.authService.login(loginDto);
+    } catch (err) {
+      console.error('=============================================');
+      console.error('DA PHAT HIEN LOI THAT SU:');
+      console.error(err);
+      console.error('=============================================');
+      throw err;
+    }
   }
 
   @Post('register')
