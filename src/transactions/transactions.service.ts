@@ -297,14 +297,21 @@ export class TransactionsService {
     return this.prisma.transaction.findMany({
       where: {
         equipment_id: equipmentId,
-        status: { in: ['pending', 'approved', 'active', 'overdue'] },
       },
       select: {
         id: true,
         request_date: true,
-        due_date: true,
+        actual_check_in: true,
+        actual_check_out: true,
         status: true,
+        borrower: {
+          select: {
+            full_name: true,
+          }
+        }
       },
+      orderBy: { request_date: 'desc' },
+      take: 10,
     });
   }
 
