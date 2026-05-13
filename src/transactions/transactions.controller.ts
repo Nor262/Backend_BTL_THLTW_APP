@@ -68,6 +68,7 @@ export class TransactionsController {
     return this.transactionsService.rateTransaction(+id, req.user.id, dto);
   }
 
+  @Roles('admin', 'storekeeper')
   @Get()
   findAll() {
     return this.transactionsService.findAll();
