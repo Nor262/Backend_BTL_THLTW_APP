@@ -1,15 +1,17 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginDto, RegisterDto } from './auth.dto';
+import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto } from './auth.dto';
 import { UpdateProfileDto, ChangePasswordDto } from '../users/users.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private mailService: MailService
   ) { }
 
   async validateUser(identifier: string, pass: string): Promise<any> {
@@ -57,10 +59,41 @@ export class AuthService {
       full_name: registerDto.full_name,
       password_hash: hashedPassword,
       role: 'borrower',
+      phone: registerDto.phone,
     });
 
     const { password_hash, ...result } = user;
     return result;
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const user = await this.usersService.findOneByEmail(dto.email);
+    if (!user) {
+      throw new NotFoundException('Email not found');
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 5);
+
+    await this.usersService.saveOtp(user.email, otp, expires);
+    await this.mailService.sendPasswordResetOtp(user.email, otp);
+
+    return { message: 'OTP sent to email successfully' };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const isValid = await this.usersService.verifyOtp(dto.email, dto.otp);
+    if (!isValid) {
+      throw new BadRequestException('Invalid or expired OTP');
+    }
+
+    const user = await this.usersService.findOneByEmail(dto.email);
+    const salt = await bcrypt.genSalt();
+    const newHash = await bcrypt.hash(dto.new_password, salt);
+    await this.usersService.updatePassword(user!.id, newHash);
+
+    return { message: 'Password reset successfully' };
   }
 
   async updateProfile(userId: number, dto: UpdateProfileDto) {
