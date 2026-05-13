@@ -171,9 +171,13 @@ export class TransactionsService {
         penaltyPoints = lateDays * 10;
       }
 
+      const damageKeywords = ['hỏng', 'lỗi', 'broken', 'vỡ', 'nứt', 'cháy', 'mất'];
+      const isDamaged = damageKeywords.some(kw => dto.condition?.toLowerCase().includes(kw));
+      const nextStatus = isDamaged ? 'maintenance' : 'available';
+
       await tx.equipment.update({
         where: { id: transaction.equipment_id },
-        data: { status: 'available' },
+        data: { status: nextStatus },
       });
 
       const updatedTx = await tx.transaction.update({
@@ -190,10 +194,25 @@ export class TransactionsService {
       });
 
       if (penaltyPoints > 0) {
-        await tx.user.update({
+        const user = await tx.user.update({
           where: { id: transaction.borrower_id },
           data: { penalty_points: { increment: penaltyPoints } }
         });
+
+        // Tự động khóa tài khoản nếu vượt 100 điểm phạt
+        if (user.penalty_points >= 100 && user.is_active) {
+          await tx.user.update({
+            where: { id: user.id },
+            data: { is_active: false }
+          });
+          
+          await this.notifications.createNotification(
+            user.id,
+            'Tài khoản bị tạm khóa',
+            'Tài khoản của bạn đã bị khóa do điểm phạt vượt quá giới hạn (100 điểm). Vui lòng liên hệ Admin.',
+            'system'
+          );
+        }
       }
 
       // Notify borrower

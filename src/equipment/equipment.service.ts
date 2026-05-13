@@ -94,6 +94,17 @@ export class EquipmentService {
     }));
   }
 
+  async resolveMaintenance(id: number) {
+    const equipment = await this.prisma.equipment.findUnique({ where: { id } });
+    if (!equipment) throw new NotFoundException('Equipment not found');
+    if (equipment.status !== 'maintenance') throw new BadRequestException('Equipment is not in maintenance');
+
+    return this.prisma.equipment.update({
+      where: { id },
+      data: { status: 'available' },
+    });
+  }
+
   async importBulkExcel(buffer: Buffer, adminId: number) {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(buffer as any);
