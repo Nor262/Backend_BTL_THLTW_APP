@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsOptional, IsDateString } from 'class-validator';
+import { IsInt, IsString, IsOptional, IsDateString, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTransactionDto {
@@ -50,4 +50,17 @@ export class VerifyItemDto {
   @ApiProperty({ example: 'MBP-2023-001' })
   @IsString()
   serial_number!: string;
+}
+
+export class RatingDto {
+  @ApiProperty({ example: 5 })
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  rating!: number;
+
+  @ApiProperty({ example: 'Máy dùng tốt, pin lâu', required: false })
+  @IsString()
+  @IsOptional()
+  feedback?: string;
 }

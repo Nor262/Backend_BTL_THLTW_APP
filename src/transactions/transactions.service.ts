@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto } from './transactions.dto';
+import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto, RatingDto } from './transactions.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
@@ -206,6 +206,21 @@ export class TransactionsService {
       );
 
       return updatedTx;
+    });
+  }
+
+  async rateTransaction(transactionId: number, userId: number, dto: RatingDto) {
+    const transaction = await this.prisma.transaction.findUnique({ where: { id: transactionId } });
+    if (!transaction) throw new NotFoundException('Transaction not found');
+    if (transaction.borrower_id !== userId) throw new BadRequestException('Not your transaction');
+    if (transaction.status !== 'completed') throw new BadRequestException('You can only rate completed transactions');
+
+    return this.prisma.transaction.update({
+      where: { id: transactionId },
+      data: {
+        rating: dto.rating,
+        feedback: dto.feedback,
+      }
     });
   }
 
