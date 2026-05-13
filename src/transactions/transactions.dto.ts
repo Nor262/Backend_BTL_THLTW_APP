@@ -64,3 +64,9 @@ export class RatingDto {
   @IsOptional()
   feedback?: string;
 }
+
+export class ExtendBookingDto {
+  @ApiProperty({ example: '2023-12-01T10:00:00.000Z' })
+  @IsDateString()
+  new_due_date!: string;
+}

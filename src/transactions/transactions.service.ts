@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto, RatingDto } from './transactions.dto';
+import { CreateTransactionDto, ReviewTransactionDto, CheckInOutDto, RatingDto, ExtendBookingDto } from './transactions.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
@@ -207,6 +207,42 @@ export class TransactionsService {
 
       return updatedTx;
     });
+  }
+
+  async extendBooking(transactionId: number, userId: number, dto: ExtendBookingDto) {
+    const transaction = await this.prisma.transaction.findUnique({ where: { id: transactionId } });
+    if (!transaction) throw new NotFoundException('Transaction not found');
+    if (transaction.borrower_id !== userId) throw new BadRequestException('Not your transaction');
+    if (transaction.status !== 'active') throw new BadRequestException('Transaction is not active');
+    if (transaction.is_extended) throw new BadRequestException('Transaction already extended once');
+
+    const newDueDate = new Date(dto.new_due_date);
+    if (newDueDate <= transaction.due_date) throw new BadRequestException('New due date must be after current due date');
+
+    // Check overlaps
+    const overlapping = await this.prisma.transaction.findFirst({
+      where: {
+        equipment_id: transaction.equipment_id,
+        status: { in: ['approved', 'active', 'pending'] },
+        start_date: { lt: newDueDate },
+        due_date: { gt: transaction.due_date },
+        id: { not: transactionId }
+      }
+    });
+
+    if (overlapping) {
+      throw new BadRequestException('Cannot extend: Equipment is already booked by someone else during this period');
+    }
+
+    const updatedTx = await this.prisma.transaction.update({
+      where: { id: transactionId },
+      data: {
+        due_date: newDueDate,
+        is_extended: true,
+      }
+    });
+
+    return updatedTx;
   }
 
   async rateTransaction(transactionId: number, userId: number, dto: RatingDto) {
