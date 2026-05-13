@@ -16,9 +16,13 @@ import { MaintenanceModule } from './maintenance/maintenance.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AuditModule } from './audit/audit.module';
 import { ReportsModule } from './reports/reports.module';
+import { ConfigModule } from '@nestjs/config';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    FirebaseModule,
     PrismaModule,
     AuthModule,
     UsersModule,
