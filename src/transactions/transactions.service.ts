@@ -161,6 +161,16 @@ export class TransactionsService {
     }
 
     return this.prisma.$transaction(async (tx) => {
+      const actualCheckIn = new Date();
+      let lateDays = 0;
+      let penaltyPoints = 0;
+
+      if (actualCheckIn > transaction.due_date) {
+        const diffTime = Math.abs(actualCheckIn.getTime() - transaction.due_date.getTime());
+        lateDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        penaltyPoints = lateDays * 10;
+      }
+
       await tx.equipment.update({
         where: { id: transaction.equipment_id },
         data: { status: 'available' },
@@ -171,7 +181,7 @@ export class TransactionsService {
         data: {
           status: 'completed',
           storekeeper_id: storekeeperId,
-          actual_check_in: new Date(),
+          actual_check_in: actualCheckIn,
           condition_at_check_in: dto.condition,
           image_url_after: imageUrl,
           updated_by: storekeeperId,
@@ -179,11 +189,19 @@ export class TransactionsService {
         include: { equipment: true }
       });
 
+      if (penaltyPoints > 0) {
+        await tx.user.update({
+          where: { id: transaction.borrower_id },
+          data: { penalty_points: { increment: penaltyPoints } }
+        });
+      }
+
       // Notify borrower
+      const penaltyMsg = penaltyPoints > 0 ? ` Bạn đã trả muộn ${lateDays} ngày và bị trừ ${penaltyPoints} điểm uy tín.` : '';
       await this.notifications.createNotification(
         transaction.borrower_id,
         'Hoàn tất trả thiết bị',
-        `Cảm ơn bạn đã trả thiết bị ${updatedTx.equipment.name}. Giao dịch đã hoàn tất.`,
+        `Cảm ơn bạn đã trả thiết bị ${updatedTx.equipment.name}. Giao dịch đã hoàn tất.${penaltyMsg}`,
         'return'
       );
 
