@@ -46,6 +46,7 @@ export class UsersService {
         username: true,
         email: true,
         full_name: true,
+        phone: true,
         role: true,
         is_active: true,
         created_at: true,
@@ -96,18 +97,32 @@ export class UsersService {
     return updated;
   }
 
-  async updateProfile(id: number, data: { full_name?: string; fcm_token?: string }) {
+  async updateProfile(id: number, data: { full_name?: string; fcm_token?: string; phone?: string }) {
     return this.prisma.user.update({
       where: { id },
       data,
-      select: { id: true, username: true, email: true, full_name: true, role: true },
+      select: { id: true, username: true, email: true, full_name: true, phone: true, role: true },
     });
   }
 
   async updatePassword(id: number, newPasswordHash: string) {
     return this.prisma.user.update({
       where: { id },
-      data: { password_hash: newPasswordHash },
+      data: { 
+        password_hash: newPasswordHash,
+        otp: null,
+        otp_expires_at: null
+      },
+    });
+  }
+
+  async updateOtp(id: number, otp: string, expiresAt: Date) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        otp,
+        otp_expires_at: expiresAt,
+      },
     });
   }
 }

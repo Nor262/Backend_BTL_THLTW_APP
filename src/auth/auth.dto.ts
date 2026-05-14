@@ -34,4 +34,34 @@ export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   full_name: string;
+
+  @ApiProperty({ example: '0123456789' })
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+}
+
+export class ForgotPasswordDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({ example: '123456' })
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
+
+  @ApiProperty({ example: 'newpassword123', minLength: 6 })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  new_password: string;
 }

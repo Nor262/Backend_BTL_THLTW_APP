@@ -13,6 +13,7 @@ export class PrismaService extends PrismaClient {
       password: dbUrl.password,
       database: dbUrl.pathname.replace('/', ''),
       connectionLimit: 10,
+      allowPublicKeyRetrieval: true,
     });
     super({ adapter });
   }
