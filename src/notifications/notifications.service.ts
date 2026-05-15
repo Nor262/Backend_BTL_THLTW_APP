@@ -6,14 +6,14 @@ export interface INotificationService {
   sendEmail(email: string, subject: string, body: string): Promise<void>;
   createNotification(userId: number, title: string, message: string, type: string): Promise<void>;
   getUserNotifications(userId: number): Promise<any[]>;
-  markAsRead(notificationId: number): Promise<void>;
+  markAsRead(notificationId: number): Promise<any>;
 }
 
 @Injectable()
 export class NotificationsService implements INotificationService {
   private readonly logger = new Logger(NotificationsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createNotification(userId: number, title: string, message: string, type: string): Promise<void> {
     await this.prisma.notification.create({
@@ -24,7 +24,7 @@ export class NotificationsService implements INotificationService {
         type,
       },
     });
-    
+
     // Also try to send push notification if user has token
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (user?.fcm_token) {
@@ -40,11 +40,13 @@ export class NotificationsService implements INotificationService {
     });
   }
 
-  async markAsRead(notificationId: number): Promise<void> {
-    await this.prisma.notification.update({
+  async markAsRead(notificationId: number): Promise<any> {
+    const updated = await this.prisma.notification.update({
       where: { id: notificationId },
       data: { is_read: true },
     });
+
+    return updated;
   }
 
   async sendPushNotification(token: string, title: string, body: string): Promise<void> {
